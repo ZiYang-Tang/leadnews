@@ -1,0 +1,28 @@
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Mac
+.DS_Store
+
+# Maven a
+log/
+**/target/
+
+# java
+*.class
+*.war
+*.ear
+
+# jrebel
+rebel.xml
+
+# bak
+*.bak
+**/bin/
