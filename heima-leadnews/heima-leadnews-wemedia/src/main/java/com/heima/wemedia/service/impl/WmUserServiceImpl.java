@@ -5,20 +5,32 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
-import com.heima.model.media.pojos.WmUser;
+import com.heima.model.wemedia.pojos.WmUser;
 import com.heima.model.wemedia.dtos.WmUserDto;
 import com.heima.utils.common.AppJwtUtil;
 import com.heima.wemedia.mapper.WmUserMapper;
+import com.heima.wemedia.service.WmNewsService;
 import com.heima.wemedia.service.WmUserService;
+import io.jsonwebtoken.Claims;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("all")
 @Service
+@Transactional
 public class WmUserServiceImpl extends ServiceImpl<WmUserMapper, WmUser> implements WmUserService {
 
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public ResponseResult insert(WmUser wmUser) {
@@ -43,34 +55,51 @@ public class WmUserServiceImpl extends ServiceImpl<WmUserMapper, WmUser> impleme
         return ResponseResult.okResult(wmUser);
     }
 
-    @Override
     public ResponseResult login(WmUserDto dto) {
-        //1. 参数校验
+
+        //校验参数
         if (StringUtils.isEmpty(dto.getName()) || StringUtils.isEmpty(dto.getPassword())) {
-            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "用户名或密码不匹配！");
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID,"用户名或密码错误");
         }
-        //2.查询数据库中中的数据库信息
-        WmUser wmUser = getOne(Wrappers.<WmUser>lambdaQuery().eq(WmUser::getName, dto.getName()));
-        if (wmUser != null) {
-            //将dto传过来的数据，加盐加密，在和数据库的密码对比
-            String pswd = DigestUtils.md5DigestAsHex((dto.getPassword() + wmUser.getSalt()).getBytes());
-            if (pswd.equals(wmUser.getPassword())){
-                //说明密码正确，生成token，再获得jwt并返回
-                HashMap<String, Object> map = new HashMap<>();
-                map.put("token", AppJwtUtil.getToken(wmUser.getId().longValue()));
-                //将敏感信息置为空，
+
+        //查询数据库中的用户信息
+        List<WmUser> list = list(Wrappers.<WmUser>lambdaQuery().eq(WmUser::getName,dto.getName()));
+        if (list != null || list.size()==1) {
+
+            WmUser wmUser = list.get(0);
+
+            //比对密码
+            String pwd = DigestUtils.md5DigestAsHex((dto.getPassword() + wmUser.getSalt()).getBytes());
+
+            if (wmUser.getPassword().equals(pwd)){
+                //返回数据jwt
+                Map<String, Object> map = new HashMap<>();
+
+                //获取jti
+                String token = AppJwtUtil.getToken(wmUser.getId().longValue());
+                Claims claims = AppJwtUtil.getClaimsBody(token);
+                Object jti = claims.get("jti");
+
+                //将jti保存到redis
+                redisTemplate.boundValueOps(jti).set(token,7, TimeUnit.DAYS);
+
+                //添加token到集合
+                //map.put("token", AppJwtUtil.getToken(wmUser.getId().longValue()));
+                map.put("token", jti);
                 wmUser.setPassword("");
                 wmUser.setSalt("");
-                map.put("name",wmUser.getName());
-                // 返回jwt
+                map.put("user",wmUser);
+
                 return ResponseResult.okResult(map);
             }else {
-                //说明密码错误
-                return  ResponseResult.errorResult(AppHttpCodeEnum.LOGIN_PASSWORD_ERROR);
+                return ResponseResult.errorResult(AppHttpCodeEnum.LOGIN_PASSWORD_ERROR);
             }
+
         }else {
-            //说明 数据库中查询不到这个用户
-            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST,"用户不存在！");
+            return ResponseResult.errorResult(AppHttpCodeEnum.LOGIN_PASSWORD_ERROR,"用户不存在");
         }
+
     }
+
+
 }

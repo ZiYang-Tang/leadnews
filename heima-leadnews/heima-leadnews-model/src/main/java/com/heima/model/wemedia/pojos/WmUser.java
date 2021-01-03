@@ -1,4 +1,4 @@
-package com.heima.model.media.pojos;
+package com.heima.model.wemedia.pojos;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

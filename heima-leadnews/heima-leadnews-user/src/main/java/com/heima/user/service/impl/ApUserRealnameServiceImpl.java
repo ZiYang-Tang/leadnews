@@ -9,7 +9,7 @@ import com.heima.model.article.pojos.ApAuthor;
 import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
-import com.heima.model.media.pojos.WmUser;
+import com.heima.model.wemedia.pojos.WmUser;
 import com.heima.model.user.dtos.AuthDto;
 import com.heima.model.user.pojos.ApUser;
 import com.heima.model.user.pojos.ApUserRealname;

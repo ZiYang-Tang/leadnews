@@ -8,6 +8,8 @@ import com.heima.model.common.dtos.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/channel")
 public class AdChannelController  implements AdChannelControllerApi {
@@ -37,5 +39,12 @@ public class AdChannelController  implements AdChannelControllerApi {
     @Override
     public ResponseResult deleteChannelById(@PathVariable Integer id) {
         return channelService.deleteChannelById(id);
+    }
+
+    @GetMapping("/channels")
+    @Override
+    public ResponseResult findAll() {
+        List<AdChannel> list = channelService.list();
+        return ResponseResult.okResult(list);
     }
 }

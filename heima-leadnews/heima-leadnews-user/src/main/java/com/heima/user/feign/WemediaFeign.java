@@ -1,7 +1,7 @@
 package com.heima.user.feign;
 
 import com.heima.model.common.dtos.ResponseResult;
-import com.heima.model.media.pojos.WmUser;
+import com.heima.model.wemedia.pojos.WmUser;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;

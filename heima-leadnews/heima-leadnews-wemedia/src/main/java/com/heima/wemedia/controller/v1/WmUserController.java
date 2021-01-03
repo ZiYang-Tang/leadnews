@@ -2,7 +2,7 @@ package com.heima.wemedia.controller.v1;
 
 import com.heima.api.wemedia.WmUserControllerApi;
 import com.heima.model.common.dtos.ResponseResult;
-import com.heima.model.media.pojos.WmUser;
+import com.heima.model.wemedia.pojos.WmUser;
 import com.heima.model.wemedia.dtos.WmUserDto;
 import com.heima.wemedia.service.WmUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +25,5 @@ public class WmUserController implements WmUserControllerApi {
     public ResponseResult findByName(String name) {
         return wmUserService.findByName(name);
     }
-
-    @PostMapping("/in")
-    @Override
-    public ResponseResult login(WmUserDto dto) {
-        return wmUserService.login(dto);
-    }
-
 
 }
