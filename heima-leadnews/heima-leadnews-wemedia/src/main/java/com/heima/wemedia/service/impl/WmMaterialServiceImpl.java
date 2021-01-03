@@ -18,6 +18,7 @@ import com.heima.utils.threadlocal.WmThreadLocalUtils;
 import com.heima.wemedia.mapper.WmMaterialMapper;
 import com.heima.wemedia.mapper.WmNewsMaterialMapper;
 import com.heima.wemedia.service.WmMaterialService;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,8 +49,8 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
 
     @Override
     public ResponseResult uploadPicture(MultipartFile multipartFile) {
-        //1.检查参数
-        if(multipartFile == null){
+        //1. 参数校验
+        if (multipartFile == null) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
 
@@ -76,7 +77,6 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
         //拼接图片路径
         wmMaterial.setUrl(fileServerUrl+fileId);
         return ResponseResult.okResult(wmMaterial);
-
     }
 
     @Override

@@ -65,7 +65,7 @@ export default {
     // 根据Id删除文章
     async deleteArticlesById (Id) {
       const temp = await deleteArticles(Id)
-      if (temp.code === 0) {
+      if (temp.code === 200) {
         this.$message({ type: 'success', message: '删除成功!' })
         this.searchArticle()
       } else {
@@ -75,7 +75,7 @@ export default {
     // 上下架
     async upOrDown (Id, enable) {
       const temp = await upDownArticle({ id: Id, enable: enable })
-      if (temp.code === 0) {
+      if (temp.code === 200) {
         this.$message({ type: 'success', message: '操作成功!' })
         this.searchArticle()
       } else {

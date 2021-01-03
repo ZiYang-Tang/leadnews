@@ -36,4 +36,7 @@ public interface WmMaterialService extends IService<WmMaterial> {
      * @return
      */
     ResponseResult updateStatus(Integer id, Short type);
+
+
+
 }
