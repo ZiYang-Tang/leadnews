@@ -5,6 +5,7 @@ import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.wemedia.pojos.WmUser;
 import com.heima.model.wemedia.dtos.WmUserDto;
 import com.heima.wemedia.service.WmUserService;
+import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,5 +26,12 @@ public class WmUserController implements WmUserControllerApi {
     public ResponseResult findByName(String name) {
         return wmUserService.findByName(name);
     }
+
+    @GetMapping("/findOne/{id}")
+    @Override
+    public WmUser findWmUserById(@PathVariable("id")  Long id) {
+        return wmUserService.getById(id);
+    }
+
 
 }

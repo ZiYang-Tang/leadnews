@@ -21,7 +21,6 @@ import com.heima.wemedia.mapper.WmMaterialMapper;
 import com.heima.wemedia.mapper.WmNewsMapper;
 import com.heima.wemedia.mapper.WmNewsMaterialMapper;
 import com.heima.wemedia.service.WmNewsService;
-import com.sun.xml.bind.v2.model.core.ID;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +113,7 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         WmNews wmNews = new WmNews();
         // 将dto里的属性，复制到wmNews对象里
         BeanUtils.copyProperties(dto, wmNews);
+        //判断文章的封面类型是否为自动
         if (WemediaContans.WM_NEWS_TYPE_AUTO.equals(dto.getType())) {
             wmNews.setType(null);
         }
@@ -135,7 +135,7 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         List<String> materials = ectractUrlInfo(list);
 
         //2.1 关联内容中的图片和素材的关系
-        // 先判断提交是否是 提交审核，并且文章中不是无图模式
+        // 先判断提交是否是 提交审核 ，在判断提交的图片和设置的图片数量是否一致
         if (isSubmit == WmNews.Status.SUBMIT.getCode() && materials.size() != 0) {
             ResponseResult responseResult = saveRelativeInfoForContent(materials, wmNews.getId());
             if (responseResult != null) {
@@ -143,7 +143,7 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
             }
         }
         //2.2关联封面中的图片和文章的关联关系，将wm_type设置为自动
-        // 判断提交过来的文章 是否是提交审核
+        // 是否是提交审核,并且是无图模式
         if (isSubmit == WmNews.Status.SUBMIT.getCode()) {
             ResponseResult responseResult = saveRelativeInfoForCover(dto, materials, wmNews);
             if (responseResult != null) {

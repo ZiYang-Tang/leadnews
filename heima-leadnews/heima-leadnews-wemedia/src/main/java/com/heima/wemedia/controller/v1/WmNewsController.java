@@ -2,6 +2,7 @@ package com.heima.wemedia.controller.v1;
 
 import com.heima.api.wemedia.WmNewsControllerApi;
 import com.heima.model.common.dtos.ResponseResult;
+import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.wemedia.dtos.WmNewsDto;
 import com.heima.model.wemedia.dtos.WmNewsPageReqDto;
 import com.heima.model.wemedia.pojos.WmNews;
@@ -38,13 +39,13 @@ public class WmNewsController implements WmNewsControllerApi {
 
     @GetMapping("/one/{id}")
     @Override
-    public ResponseResult findWmNewsById(@PathVariable Integer id) {
+    public ResponseResult findWmNewsById(@PathVariable("id") Integer id) {
         return wmNewsService.findWmNewsById(id);
     }
 
     @GetMapping("/del_news/{id}")
     @Override
-    public ResponseResult delNews(@PathVariable Integer id) {
+    public ResponseResult delNews(@PathVariable("id") Integer id) {
         return wmNewsService.delNews(id);
     }
 
@@ -52,6 +53,19 @@ public class WmNewsController implements WmNewsControllerApi {
     @Override
     public ResponseResult downOrUp(@RequestBody WmNewsDto dto) {
         return wmNewsService.downOrUp(dto);
+    }
+
+    @GetMapping("/findOne/{id}")
+    @Override
+    public WmNews findById(@PathVariable("id") Integer id) {
+        return wmNewsService.getById(id);
+    }
+
+    @PostMapping("/update")
+    @Override
+    public ResponseResult updateWmNews(WmNews wmNews) {
+        wmNewsService.updateById(wmNews);
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 
 }

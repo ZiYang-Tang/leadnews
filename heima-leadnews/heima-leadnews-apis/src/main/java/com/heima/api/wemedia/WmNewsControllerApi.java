@@ -3,6 +3,7 @@ package com.heima.api.wemedia;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.wemedia.dtos.WmNewsDto;
 import com.heima.model.wemedia.dtos.WmNewsPageReqDto;
+import com.heima.model.wemedia.pojos.WmNews;
 
 /**
  * 自媒体文章接口
@@ -48,4 +49,18 @@ public interface WmNewsControllerApi {
      * @return
      */
     ResponseResult downOrUp(WmNewsDto dto);
+
+    /**
+     * 根据id查询文章
+     * @param id
+     * @return
+     */
+    WmNews findById(Integer id);
+
+    /**
+     * 修改文章
+     * @param wmNews
+     * @return
+     */
+    ResponseResult updateWmNews(WmNews wmNews);
 }
