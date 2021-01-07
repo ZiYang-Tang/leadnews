@@ -1,5 +1,6 @@
 package com.heima.artcle.controller.v1;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.heima.api.article.AuthorControllerApi;
 import com.heima.artcle.service.AuthorService;
 import com.heima.model.article.pojos.ApAuthor;
@@ -23,5 +24,11 @@ public class AuthorController implements AuthorControllerApi {
     @Override
     public ResponseResult save(@RequestBody ApAuthor apAuthor) {
         return authorService.insert(apAuthor);
+    }
+
+    @GetMapping("/findByName/{name}")
+    @Override
+    public ApAuthor findByName(@PathVariable("name") String name) {
+        return authorService.getOne(Wrappers.<ApAuthor>lambdaQuery().eq(ApAuthor::getName, name));
     }
 }

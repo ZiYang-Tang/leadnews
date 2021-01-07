@@ -5,6 +5,7 @@ import com.heima.model.wemedia.pojos.WmUser;
 import com.heima.model.wemedia.dtos.WmUserDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Api(value = "自媒体用户管理", tags = "WmUser", description = "自媒体用户管理API")
@@ -31,5 +32,5 @@ public interface WmUserControllerApi {
      * @param id
      * @return
      */
-    WmUser findWmUserById(Long id);
+    WmUser findWmUserById(Integer id);
 }

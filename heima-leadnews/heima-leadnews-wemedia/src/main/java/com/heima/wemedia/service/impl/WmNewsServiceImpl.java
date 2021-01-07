@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.heima.common.constants.message.NewsAutoScanConstants;
 import com.heima.common.constants.wemedia.WemediaContans;
 import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
@@ -25,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,6 +97,10 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         return responseResult;
     }
 
+
+
+    @Autowired
+    private KafkaTemplate kafkaTemplate;
     /**
      * 保存文章
      *
@@ -289,9 +295,11 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         wmNews.setCreatedTime(new Date());
         wmNews.setSubmitedTime(new Date());
         wmNews.setEnable((short) 1);
+        // 创建标志
+        boolean flag = false;
         // 判断是保存还是修改
         if (wmNews.getId() == null) {
-            save(wmNews);
+            flag = save(wmNews);
         } else {
             //如果 是修改 那么先删除之前的关系
             LambdaQueryWrapper<WmNewsMaterial> queryWrapper = new LambdaQueryWrapper<>();
@@ -299,6 +307,10 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
             //删除 文章&素材的中间表
             wmNewsMaterialMapper.delete(queryWrapper);
             updateById(wmNews);
+        }
+        //如果文章保存成功则发送消息
+        if (flag){
+            kafkaTemplate.send(NewsAutoScanConstants.WM_NEWS_AUTO_SCAN_TOPIC,JSON.toJSONString(wmNews.getId()));
         }
     }
 
@@ -369,7 +381,7 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "文章不存在");
         }
         //3.判断当前文章的状态 上架状态和发布（9）不能删除
-        if (wmNews.getStatus().equals(WmNews.Status.PUBLISHED.getCode())) {
+        if (!wmNews.getStatus().equals(WmNews.Status.PUBLISHED.getCode())) {
             return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST, "当前文章不是发布状态，不能上下架");
         }
         //4.修改文章的状态 将范围缩小之 0-1

@@ -12,7 +12,7 @@ import java.util.Date;
 
 /**
  * <p>
- * 自媒体图文内容信息表
+ * 自媒体图文内容信息表  broker
  * </p>
  *
  * @author ziyang
@@ -26,7 +26,7 @@ public class WmNews implements Serializable {
     /**
      * 主键
      */
-    @TableId(value = "id", type = IdType.ID_WORKER)
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**

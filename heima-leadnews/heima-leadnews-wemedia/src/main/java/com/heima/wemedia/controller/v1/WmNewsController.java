@@ -63,7 +63,7 @@ public class WmNewsController implements WmNewsControllerApi {
 
     @PostMapping("/update")
     @Override
-    public ResponseResult updateWmNews(WmNews wmNews) {
+    public ResponseResult updateWmNews(@RequestBody WmNews wmNews) {
         wmNewsService.updateById(wmNews);
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }

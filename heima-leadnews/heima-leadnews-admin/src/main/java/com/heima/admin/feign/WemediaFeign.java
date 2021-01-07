@@ -1,7 +1,6 @@
 package com.heima.admin.feign;
 
 import com.heima.model.common.dtos.ResponseResult;
-import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.wemedia.pojos.WmNews;
 import com.heima.model.wemedia.pojos.WmUser;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -16,8 +15,8 @@ public interface WemediaFeign {
     public WmNews findById(@PathVariable("id") Integer id);
 
     @PostMapping("/api/v1/news/update")
-    public ResponseResult updateWmNews(WmNews wmNews);
+    ResponseResult updateWmNews(WmNews wmNews);
 
     @GetMapping("/api/v1/user/findOne/{id}")
-    public WmUser findWmUserById(@PathVariable("id")  Long id);
+    public WmUser findWmUserById(@PathVariable("id")  Integer id);
 }
