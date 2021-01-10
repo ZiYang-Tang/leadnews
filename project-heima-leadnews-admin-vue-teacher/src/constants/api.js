@@ -12,10 +12,10 @@ export const API_CHANNEL_UPDATE = '/service_6001/admin/api/v1/channel/update'
 export const API_CHANNEL_DEL = '/service_6001/admin/api/v1/channel/del'
 
 // 媒体审核
-export const API_NEWS_AUTH_LIST = '/service_9001/api/v1/news_auth/list'
-export const API_NEWS_AUTH_ONE = '/service_9001/api/v1/news_auth/one/'
-export const API_NEWS_AUTH_PASS = '/service_9001/api/v1/news_auth/auth_pass'
-export const API_NEWS_AUTH_FAIL = '/service_9001/api/v1/news_auth/auth_fail'
+export const API_NEWS_AUTH_LIST = '/service_6001/admin/api/v1/news_auth/list'
+export const API_NEWS_AUTH_ONE = '/service_6001/admin/api/v1/news_auth/one/'
+export const API_NEWS_AUTH_PASS = '/service_6001/admin/api/v1/news_auth/auth_pass'
+export const API_NEWS_AUTH_FAIL = '/service_6001/admin/api/v1/news_auth/auth_fail'
 
 // 敏感词设置
 export const API_SENSITIVE_LIST = '/service_9001/api/v1/sensitive/list'

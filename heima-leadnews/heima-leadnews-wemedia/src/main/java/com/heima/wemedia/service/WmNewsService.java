@@ -1,10 +1,15 @@
 package com.heima.wemedia.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.heima.model.admin.dtos.NewsAuthDto;
+import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.wemedia.dtos.WmNewsDto;
 import com.heima.model.wemedia.dtos.WmNewsPageReqDto;
 import com.heima.model.wemedia.pojos.WmNews;
+import com.heima.model.wemedia.vo.WmNewsVo;
+
+import java.util.List;
 
 public interface WmNewsService extends IService<WmNews> {
 
@@ -41,4 +46,24 @@ public interface WmNewsService extends IService<WmNews> {
      * @return
      */
     ResponseResult downOrUp(WmNewsDto dto);
+
+    /**
+     * 查询需要发布的文章id列表
+     * @return
+     */
+    List<Integer> findRelease();
+
+    /**
+     * 分页查询文章信息
+     * @param dto
+     * @return
+     */
+    public PageResponseResult findListAndPage(NewsAuthDto dto);
+
+    /**
+     * 查询文章详情
+     * @param id
+     * @return
+     */
+    WmNewsVo findWmNewsVo(Integer id);
 }

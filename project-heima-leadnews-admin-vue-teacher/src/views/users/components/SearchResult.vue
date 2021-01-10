@@ -150,7 +150,7 @@ export default {
         sets: [{ filed: 'status', value: status }]
       }
       const res = await updateData(params)
-      if (res.code === 0) {
+      if (res.code === 200) {
         this.changeStatus(index, status)
         this.$message({ type: 'success', message: '操作成功！' })
       } else {

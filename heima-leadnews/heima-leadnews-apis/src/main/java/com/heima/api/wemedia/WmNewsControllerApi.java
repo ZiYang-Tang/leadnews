@@ -1,9 +1,14 @@
 package com.heima.api.wemedia;
 
+import com.heima.model.admin.dtos.NewsAuthDto;
+import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.wemedia.dtos.WmNewsDto;
 import com.heima.model.wemedia.dtos.WmNewsPageReqDto;
 import com.heima.model.wemedia.pojos.WmNews;
+import com.heima.model.wemedia.vo.WmNewsVo;
+
+import java.util.List;
 
 /**
  * 自媒体文章接口
@@ -63,4 +68,24 @@ public interface WmNewsControllerApi {
      * @return
      */
     ResponseResult updateWmNews(WmNews wmNews);
+
+    /**
+     * 查询需要发布的文章id列表
+     * @return
+     */
+    List<Integer> findRelease();
+
+    /**
+     * 查询文章列表
+     * @param dto
+     * @return
+     */
+    public PageResponseResult findList(NewsAuthDto dto);
+
+    /**
+     * 查询文章详情
+     * @param id
+     * @return
+     */
+    public WmNewsVo findWmNewsVo(Integer id) ;
 }

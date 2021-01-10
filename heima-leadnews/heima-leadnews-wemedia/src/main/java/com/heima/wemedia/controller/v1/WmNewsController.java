@@ -1,16 +1,22 @@
 package com.heima.wemedia.controller.v1;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.heima.api.wemedia.WmNewsControllerApi;
+import com.heima.model.admin.dtos.NewsAuthDto;
+import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.wemedia.dtos.WmNewsDto;
 import com.heima.model.wemedia.dtos.WmNewsPageReqDto;
 import com.heima.model.wemedia.pojos.WmNews;
+import com.heima.model.wemedia.vo.WmNewsVo;
 import com.heima.wemedia.service.WmNewsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.GET;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/news")
@@ -68,4 +74,21 @@ public class WmNewsController implements WmNewsControllerApi {
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 
+    @GetMapping("/findRelease")
+    @Override
+    public List<Integer> findRelease() {
+        return wmNewsService.findRelease();
+    }
+
+    @PostMapping("/findList")
+    @Override
+    public PageResponseResult findList(@RequestBody NewsAuthDto dto){
+        return wmNewsService.findListAndPage(dto);
+    }
+
+    @GetMapping("/find_news_vo/{id}")
+    @Override
+    public WmNewsVo findWmNewsVo(@PathVariable("id") Integer id) {
+        return wmNewsService.findWmNewsVo(id);
+    }
 }

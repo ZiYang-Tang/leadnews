@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient("leadnews-article")
 public interface ArticleFeign {
     @PostMapping("/api/v1/article_config/save")
-    public ResponseResult saveArticleConfig(@RequestBody ApArticleConfig apArticleConfig);
+    public ResponseResult saveArticleConfig(ApArticleConfig apArticleConfig);
 
     @GetMapping("/api/v1/author/findByName/{name}")
-    public ApAuthor findByName(@PathVariable("name") String name);
+    public ApAuthor selectAuthorByName(@PathVariable("name") String name);
 
     @PostMapping("/api/v1/article/save")
-    public ApArticle saveArticle(@RequestBody ApArticle apArticle);
+    public ApArticle saveArticle(ApArticle apArticle);
 
     @PostMapping("/api/v1/article_content/save")
-    public ResponseResult saveArticleContent(@RequestBody ApArticleContent apArticleContent);
+    public ResponseResult saveArticleContent(ApArticleContent apArticleContent);
 }

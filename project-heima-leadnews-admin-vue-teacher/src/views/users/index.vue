@@ -89,7 +89,7 @@ export default {
     },
     async loadData () {
       const res = await loadList({ ...this.params })
-      if (res.code === 0) {
+      if (res.code === 200) {
         this.list = res.data.list
         this.host = res.host
         this.total = res.data.total

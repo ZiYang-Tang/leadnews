@@ -1,4 +1,4 @@
-package com.heima.admin.listener;
+package com.heima.admin.kafka.listener;
 
 import com.heima.admin.service.WemediaNewsAutoScanService;
 import com.heima.common.constants.message.NewsAutoScanConstants;

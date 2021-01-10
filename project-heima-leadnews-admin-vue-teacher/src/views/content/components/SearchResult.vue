@@ -107,7 +107,7 @@ export default {
       let res
       if (status === 1) res = await down(params)
       else res = await up(params)
-      if (res.code === 0) {
+      if (res.code === 200) {
         this.changeStatus(index, status)
         this.$message({ type: 'success', message: '操作成功！' })
       } else {

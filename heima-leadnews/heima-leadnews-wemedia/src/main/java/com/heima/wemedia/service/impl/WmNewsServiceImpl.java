@@ -7,7 +7,9 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.heima.common.constants.message.NewsAutoScanConstants;
+import com.heima.common.constants.message.WmNewsMessageConstants;
 import com.heima.common.constants.wemedia.WemediaContans;
+import com.heima.model.admin.dtos.NewsAuthDto;
 import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
@@ -17,10 +19,12 @@ import com.heima.model.wemedia.pojos.WmMaterial;
 import com.heima.model.wemedia.pojos.WmNews;
 import com.heima.model.wemedia.pojos.WmNewsMaterial;
 import com.heima.model.wemedia.pojos.WmUser;
+import com.heima.model.wemedia.vo.WmNewsVo;
 import com.heima.utils.threadlocal.WmThreadLocalUtils;
 import com.heima.wemedia.mapper.WmMaterialMapper;
 import com.heima.wemedia.mapper.WmNewsMapper;
 import com.heima.wemedia.mapper.WmNewsMaterialMapper;
+import com.heima.wemedia.mapper.WmUserMapper;
 import com.heima.wemedia.service.WmNewsService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -30,10 +34,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings(value = "all")
@@ -48,7 +49,13 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
     private WmNewsMaterialMapper wmNewsMaterialMapper;
 
     @Autowired
+    private WmNewsMapper wmNewsMapper;
+
+    @Autowired
     private WmMaterialMapper wmMaterialMapper;
+
+    @Autowired
+    private WmUserMapper wmUserMapper;
 
     @Override
     public ResponseResult findAll(WmNewsPageReqDto dto) {
@@ -367,7 +374,11 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 
-
+    /**
+     * 上下架
+     * @param dto
+     * @return
+     */
     @Override
     public ResponseResult downOrUp(WmNewsDto dto) {
         //1.校验参数
@@ -380,16 +391,86 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         if (wmNews == null) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "文章不存在");
         }
+
         //3.判断当前文章的状态 上架状态和发布（9）不能删除
         if (!wmNews.getStatus().equals(WmNews.Status.PUBLISHED.getCode())) {
             return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST, "当前文章不是发布状态，不能上下架");
         }
-        //4.修改文章的状态 将范围缩小之 0-1
+
+        //4.修改文章的状态 并将数据同步到app端
         if (dto.getEnable() != null && dto.getEnable() > -1 && dto.getEnable() < 2) {
+
+            if (wmNews.getArticleId()!=null){
+                Map<String, Object> map = new HashMap<>();
+                map.put("enable",dto.getEnable());
+                map.put("articleId",wmNews.getArticleId());
+                // 发送消息 同步数据
+                kafkaTemplate.send(WmNewsMessageConstants.WM_NEWS_UP_OR_DOWN_TOPIC,JSON.toJSONString(map));
+            }
             //根据id修改上架状态，将数据库中的enable修改为dto传递过来enable，
             update(Wrappers.<WmNews>lambdaUpdate().eq(WmNews::getId, wmNews.getId()).set(WmNews::getEnable, dto.getEnable()));
         }
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
+
+    /**
+     * 查询审核待发布的
+     * @return
+     */
+    @Override
+    public List<Integer> findRelease() {
+        List<WmNews> list = list(Wrappers.<WmNews>lambdaQuery().eq(WmNews::getStatus, 8).lt(WmNews::getPublishTime,new Date()));
+        List<Integer> resultList = list.stream().map(WmNews::getId).collect(Collectors.toList());
+        return resultList;
+    }
+
+    /**
+     * 分页查询文章信息
+     * @param dto
+     * @return
+     */
+    @Override
+    public PageResponseResult findListAndPage(NewsAuthDto dto) {
+        //1检查参数
+        dto.checkParam();
+        //设置起始页
+        dto.setPage((dto.getPage()-1)*dto.getSize());
+        dto.setTitle("%"+dto.getTitle()+"%");
+
+        //分页查询
+        List<WmNewsVo> list = wmNewsMapper.findListAndPage(dto);
+        //统计数据
+        int count = wmNewsMapper.findListCount(dto);
+
+        //3.返回结果
+        PageResponseResult responseResult = new PageResponseResult(dto.getPage(), dto.getSize(), count);
+        responseResult.setData(list);
+        return responseResult;
+    }
+
+    /**
+     * 查询文章详情
+     * @param id
+     * @return
+     */
+    @Override
+    public WmNewsVo findWmNewsVo(Integer id) {
+        //1, 查询文章信息
+        WmNews wmNews = getById(id);
+
+        //2.查询作者
+        WmUser wmUser =null;
+        if (wmNews!=null &&wmNews.getUserId()!=null){
+            wmUser = wmUserMapper.selectById(wmNews.getId());
+        }
+
+        //3.封装信息
+        WmNewsVo wmNewsVo = new WmNewsVo();
+        BeanUtils.copyProperties(wmNews,wmNewsVo);
+        if (wmUser!=null){
+            wmNewsVo.setAuthorName(wmUser.getName());
+        }
+        return wmNewsVo;
     }
 
 

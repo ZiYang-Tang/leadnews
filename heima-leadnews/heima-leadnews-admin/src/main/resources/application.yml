@@ -32,6 +32,16 @@ mybatis-plus:
   # 设置别名包扫描路径，通过该属性可以给包中的类注册别名
   type-aliases-package: com.heima.model.admin.pojos
 
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
 
 #图片访问ip
 fdfs.url: http://118.25.197.221/
+
+xxljob:
+  admin:
+    addresses: http://192.168.200.130:8888/xxl-job-admin
+  executor:
+    appname: leadnews-admin-executor
+    port: 9999
