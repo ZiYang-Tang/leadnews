@@ -3,6 +3,11 @@ server:
 spring:
   application:
     name: leadnews-user
+  kafka:
+    bootstrap-servers: 192.168.200.130:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
   cloud:
     nacos:
       discovery:

@@ -26,9 +26,16 @@ public class AuthorController implements AuthorControllerApi {
         return authorService.insert(apAuthor);
     }
 
+
     @GetMapping("/findByName/{name}")
     @Override
     public ApAuthor findByName(@PathVariable("name") String name) {
         return authorService.getOne(Wrappers.<ApAuthor>lambdaQuery().eq(ApAuthor::getName, name));
+    }
+
+    @GetMapping("/one/{id}")
+    @Override
+    public ApAuthor findById(@PathVariable("id") Integer id) {
+        return authorService.getById(id);
     }
 }

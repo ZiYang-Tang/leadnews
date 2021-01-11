@@ -21,6 +21,7 @@
         <module>heima-leadnews-seata</module>
         <module>heima-leadnews-wemedia-gateway</module>
         <module>heima-leadnews-app-gateway</module>
+        <module>heima-leadnews-behavior</module>
     </modules>
 
     <!-- 继承Spring boot工程 -->
